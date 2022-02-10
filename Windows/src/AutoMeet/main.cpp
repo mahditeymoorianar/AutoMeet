@@ -438,6 +438,7 @@ void select_and_modify_menu() {
         {
             all_meetings[i] = all_meetings[i+1];
         }
+        number_of_meetings--;
     } else if (choice2 == 6) {
         return;
     }
