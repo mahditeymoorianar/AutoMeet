@@ -19,6 +19,10 @@ void all_meetings_menu();
 void add_new_meeting_menu();
 void resave_data();
 void select_and_modify_menu();
+void help();
+void settings();
+void initialize_settings();
+void set_theme(int choice);
 
 struct meeting {
     string name;
@@ -72,7 +76,7 @@ int get_number_of_day(const char* day_in_letters){
 
 }
 
-meeting all_meetings[20];
+meeting all_meetings[31];
 int number_of_meetings = 0;
 int exists_test() {
     if (FILE *file = fopen("C:/ProgramData/TeymooriAnar/AutoMeet/ListOfMeetings.txt", "r")) {
@@ -81,6 +85,34 @@ int exists_test() {
     } else {
         return 0;
     }
+}
+int exists_test_of_settings() {
+    if (FILE *file = fopen("C:/ProgramData/TeymooriAnar/AutoMeet/Settings.txt", "r")) {
+        fclose(file);
+        return 1;
+    } else {
+        return 0;
+    }
+}
+void initialize_settings() {
+    int exist = exists_test_of_settings();
+    if (exist == 0) {
+        system("mkdir \"C:/ProgramData/TeymooriAnar/AutoMeet/\"");
+        ofstream data_file("C:/ProgramData/TeymooriAnar/AutoMeet/Settings.txt");
+        data_file << "0";
+        data_file.close();
+    }
+
+    string text_of_file = "";
+    ifstream data_file("C:/ProgramData/TeymooriAnar/AutoMeet/Settings.txt");
+    getline(data_file, text_of_file);
+    int number_of_theme;
+    //stringstream number_of_theme_str;
+    stringstream number_of_theme_str(text_of_file);
+    number_of_theme_str >> number_of_theme;
+    set_theme(number_of_theme);
+
+
 }
 void initialize_all_meetings() {
     int exist = exists_test();
@@ -142,17 +174,20 @@ int is_for_today(meeting meet, int today_int) {
 
 int main() {
     initialize_all_meetings();
+    initialize_settings();
 
-    string choices[] = {"TIME LINE\t\tview a list of opcomig meetings for today.",
-                 "ALL MEETINGS\t\tview a list of all meetings of the week and change and modify them.",
-                 "NEW MEETING\t\tadd a new meeting.",
-                 "STOP BACKGROUND SERVICE\tstops background service untill next time you set up your computer, or select button START",
-                 "START/RESTART\t\tstarts/restarts background service"};
+    string choices[] = {"TIME LINE",
+                 "ALL MEETINGS",
+                 "NEW MEETING",
+                 "STOP BACKGROUND SERVICE",
+                 "START/RESTART",
+                 "SETTINGS",
+                 "HELP"};
 
     while(1) {
         system("cls");
         int choice = button_menu("Hello! Welcome to AutoMeet app by Mahdi Teymoori Anar!\n\nMENU:\n\n",
-                    5,
+                    7,
                     choices);
         switch (choice) {
             case 1:
@@ -171,8 +206,123 @@ int main() {
                 system("taskkill /im AutoMeet(BackgroundService).exe");
                 system("start AutoMeet(BackgroundService).exe");
                 break;
+            case 6:
+                settings();
+                break;
+            case 7:
+                help();
+                break;
         }
     }
+}
+
+void set_theme(int choice) {
+    int all_colors = 17;
+    choice = (choice % all_colors) + 1;
+    switch (choice) {
+    case 1:
+        system("color 07");
+        break;
+    case 2:
+        system("color 70");
+        break;
+    case 3:
+        system("color 87");
+        break;
+    case 4:
+        system("color 78");
+        break;
+    case 5:
+        system("color 24");
+        break;
+    case 6:
+        system("color 42");
+        break;
+    case 7:
+        system("color 82");
+        break;
+    case 8:
+        system("color 28");
+        break;
+    case 9:
+        system("color 34");
+        break;
+    case 10:
+        system("color 43");
+        break;
+    case 11:
+        system("color 35");
+        break;
+    case 12:
+        system("color 53");
+        break;
+    case 13:
+        system("color 5c");
+        break;
+    case 14:
+        system("color 31");
+        break;
+    case 15:
+        system("color 13");
+        break;
+    case 16:
+        system("color 1a");
+        break;
+    case 17:
+        system("color a1");
+        break;
+    }
+    ofstream data_file("C:/ProgramData/TeymooriAnar/AutoMeet/Settings.txt");
+    data_file << "" << (choice-1);
+    data_file.close();
+}
+
+void theme_select() {
+    int color_to_set;
+    cout << "enter an integer" << endl;
+    fflush(stdin);
+    scanf("%d", &color_to_set);
+    set_theme(color_to_set);
+    return;
+}
+
+void settings() {
+    string choices[] = {"THEME", "BACK"};
+    while (1) {
+        system("cls");
+        int choice = button_menu("========SETTINGS========",
+                    2,
+                    choices);
+        if (choice == 2) {
+            break;
+        } else {
+            theme_select();
+        }
+    }
+    return;
+}
+
+void help() {
+    cout << "Here you can see what each choice does:" << endl;
+    cout << "____________________" << endl;
+    cout << "TIME LINE : view a list of opcoming meetings for today." << endl;
+    cout << "____________________" << endl;
+    cout << "ALL MEETINGS : view a list of all meetings of the week and change and modify them." << endl;
+    cout << "____________________" << endl;
+    cout << "NEW MEETING : add a new meeting." << endl;
+    cout << "____________________" << endl;
+    cout << "STOP BACKGROUND SERVICE : stops background service until next time you set up your computer, or select button START" << endl;
+    cout << "____________________" << endl;
+    cout << "START/RESTART : starts/restarts background service" << endl;
+    cout << "____________________" << endl;
+    cout << "TIME LINE : view a list of opcomig meetings for today." << endl;
+    cout << "____________________" << endl;
+    cout << "SETTINGS : some settings and customizations" << endl;
+    cout << "____________________" << endl;
+    cout << "\n\npress ENTER to go back" << endl;
+    fflush(stdin);
+    scanf("%*c");
+    return;
 }
 
 int button_menu(string text, int number_of_choices, string choices[]) {
@@ -286,6 +436,11 @@ void add_new_meeting_menu() {
     meeting new_meet;
     system("cls");
     cout << "NEW MEETING" << endl;
+    if (number_of_meetings >= 30) {
+        cout << "You can at most have 30 meetings.\nEach meeting can be repeated at most 7 days a week." << endl;
+        cout << "Delete at least meeting to be able to add new meetings;)" << endl;
+        return;
+    }
     cout << "To cancel, just close the application window!" << endl;
     cout << "\n\nStep1 : Select a name for the meeting.\n\nname : ";
     fflush(stdin);
@@ -394,28 +549,34 @@ void select_and_modify_menu() {
     choice--;
     system("cls");
     cout << all_meetings[choice].name << endl;
-    string options[] = {"CHANGE NAME",
+    string options[] = {"OPEN NOW",
+                        "CHANGE NAME",
                         "CHANGE LINK",
                         "CHANGE HOUR",
                         "CHANGE MINUT",
                         "DELETE",
                         "CANCEL"};
-    int choice2 = button_menu("What do you want to do?", 6, options);
-    if (choice2 == 1)
+    int choice2 = button_menu("What do you want to do?", 7, options);
+    if (choice2 == 1) {
+        string command = "start "+all_meetings[choice].link;
+                const char * command_char_ptr = command.c_str();
+                cout << "Opening meeting "<<all_meetings[choice].name<<" ... "<<endl;
+                system(command_char_ptr);
+    } else if (choice2 == 2)
     {
         fflush(stdin);
         cout << "new name : ";
         string new_name;
         getline(cin, new_name);
         all_meetings[choice].name = new_name;
-    } else if (choice2 == 2) {
+    } else if (choice2 == 3) {
         fflush(stdin);
         cout << "new link : ";
         string new_link;
         getline(cin, new_link);
         all_meetings[choice].link = new_link;
 
-    } else if (choice2 == 3) {
+    } else if (choice2 == 4) {
         fflush(stdin);
         cout << "new hour : ";
         string new_hour_string;
@@ -424,7 +585,7 @@ void select_and_modify_menu() {
         int new_hour_int;
         ss >> new_hour_int;
         all_meetings[choice].hour = new_hour_int;
-    } else if (choice2 == 4) {
+    } else if (choice2 == 5) {
         fflush(stdin);
         cout << "new minut : ";
         string new_hour_string;
@@ -433,13 +594,13 @@ void select_and_modify_menu() {
         int new_hour_int;
         ss >> new_hour_int;
         all_meetings[choice].hour = new_hour_int;
-    } else if (choice2 == 5) {
+    } else if (choice2 == 6) {
         for (int i = choice; i < number_of_meetings-1; i++)
         {
             all_meetings[i] = all_meetings[i+1];
         }
         number_of_meetings--;
-    } else if (choice2 == 6) {
+    } else if (choice2 == 7) {
         return;
     }
 
