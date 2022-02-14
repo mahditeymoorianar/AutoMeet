@@ -64,7 +64,7 @@ int get_number_of_day(const char* day_in_letters){
 
 }
 
-meeting all_meetings[20];
+meeting all_meetings[31];
 int number_of_meetings = 0;
 
 void initialize_all_meetings() {
